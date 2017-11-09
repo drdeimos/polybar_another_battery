@@ -1,6 +1,7 @@
 package main
 
 // #cgo pkg-config: libnotify
+// #cgo LDFLAGS: -s
 // #include <stdio.h>
 // #include <errno.h>
 // #include <libnotify/notify.h>
@@ -8,42 +9,46 @@ import "C"
 import (
   "os"
   "fmt"
+  "time"
   "strconv"
   "github.com/distatus/battery"
 )
 
 func main() {
   var state string
+  var thr float64 = 10.0
   notify_init()
 
   threshould := os.Args[1:]
   fmt.Printf("Arg %v\n", threshould)
 
-  batteries, err := battery.GetAll()
-	if err != nil {
-		fmt.Println("Could not get battery info!")
-		return
-	}
+  for {
+    batteries, err := battery.GetAll()
+	  if err != nil {
+      fmt.Println("Could not get battery info!")
+	    return
+	  }
+    for i, battery := range batteries {
+      fmt.Printf("Bat%d: ", i)
+      fmt.Printf("state: %f\n", battery.State)
+      switch ; battery.State {
+      case 3:
+        state = "Charging"
+      case 4:
+        state = "Discharging"
+      default:
+        state = "Unknown"
+      }
 
-  for i, battery := range batteries {
-		fmt.Printf("Bat%d: ", i)
-    fmt.Printf("state: %f, ", battery.State)
-    switch ; battery.State {
-    case 3:
-      state = "Charging"
-    case 4:
-      state = "Discharging"
-    default:
-      state = "Unknown"
-    }
-
-    percent := battery.Current / (battery.Full * 0.01)
-    if ; percent < 50 && battery.State != 3 {
-      body := "Charge percent: " + strconv.FormatFloat(percent, 'f', 2, 32) + "\nState: " + state
-      notify_send("Battery low!", body, 1)
-    }
-		//fmt.Printf("Charge percent: %.2f \n", percent)
-	}
+      percent := battery.Current / (battery.Full * 0.01)
+      if ; percent < thr && battery.State != 3 {
+        body := "Charge percent: " + strconv.FormatFloat(percent, 'f', 2, 32) + "\nState: " + state
+        notify_send("Battery low!", body, 1)
+      }
+      fmt.Printf("Charge percent: %.2f \n", percent)
+      time.Sleep(10 * time.Second)
+	  }
+  }
 }
 
 func notify_init() {
