@@ -1,5 +1,10 @@
 package main
 
+/* Build flag for C libnotify library binding.
+   Trimming binary. Reduce out binary size.
+   Bind C libraries.
+*/
+
 // #cgo pkg-config: libnotify
 // #cgo LDFLAGS: -s
 // #include <stdio.h>
@@ -19,6 +24,7 @@ func main() {
   var thr float64 = 10.0
   notify_init()
 
+  // FIXME threshould hardcoded now
   threshould := os.Args[1:]
   fmt.Printf("Arg %v\n", threshould)
 
