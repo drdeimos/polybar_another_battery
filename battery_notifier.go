@@ -21,12 +21,17 @@ import (
 
 func main() {
   var state string
-  var thr float64 = 10.0
+  var thr int
+  var err error
   notify_init()
 
-  // FIXME threshould hardcoded now
-  threshould := os.Args[1:]
-  fmt.Printf("Arg %v\n", threshould)
+  if thr, err = strconv.Atoi(os.Args[1:][0]); err != nil {
+    fmt.Printf("Arg %v\n", thr)
+    fmt.Printf("Please set threshould as first arg\n")
+    os.Exit(1)
+  }
+
+  fmt.Printf("Arg %v\n", thr)
 
   for {
     batteries, err := battery.GetAll()
@@ -35,9 +40,14 @@ func main() {
 	    return
 	  }
     for i, battery := range batteries {
-      fmt.Printf("Bat%d: ", i)
-      fmt.Printf("state: %f\n", battery.State)
+      fmt.Printf("Bat%d:\n", i)
+      fmt.Printf("  state: %v %f\n", battery.State, battery.State)
+
       switch ; battery.State {
+      case 1:
+        state = "Empty"
+      case 2:
+        state = "Full"
       case 3:
         state = "Charging"
       case 4:
@@ -47,11 +57,13 @@ func main() {
       }
 
       percent := battery.Current / (battery.Full * 0.01)
-      if ; percent < thr && battery.State != 3 {
+
+      if ; percent < float64(thr) && battery.State != 3 {
         body := "Charge percent: " + strconv.FormatFloat(percent, 'f', 2, 32) + "\nState: " + state
         notify_send("Battery low!", body, 1)
       }
-      fmt.Printf("Charge percent: %.2f \n", percent)
+
+      fmt.Printf("  Charge percent: %.2f \n", percent)
       time.Sleep(10 * time.Second)
 	  }
   }
