@@ -135,12 +135,15 @@ func notify_send(summary, body string, urg int) {
 }
 
 func polybar_out(val float64, state battery.State) {
+  if ; flagdebug {
+    fmt.Printf("Debug polybar: val=%v, state=%v\n", val, state)
+  }
   col_empty := "FFFFFF"
   col_full := "00FF00"
   col_charging := "444444"
-  //col_charging := "FFDF00"
   col_discharging := "ADDFAD"
   col_default := "DFDFDF"
+  // case 0:"Unknown"
   // case 1:"Empty"
   // case 2:"Full"
   // case 3:"Charging"
@@ -151,7 +154,7 @@ func polybar_out(val float64, state battery.State) {
       fmt.Printf("%%{F#%v}  %%{F#%v}%.2f%%\n", col_empty, col_default, val)
     case 2:
       fmt.Printf("%%{F#%v}  %%{F#%v}%.2f%%\n", col_full, col_default, val)
-    case 3:
+    case 0,3:
       fmt.Printf("%%{F#%v}  %%{F#%v}%.2f%%\n", col_charging, col_default, val)
     case 4:
       fmt.Printf("%%{F#%v}  %%{F#%v}%.2f%%\n", col_discharging, col_default, val)
