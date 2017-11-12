@@ -97,8 +97,6 @@ func notify_init() {
 }
 
 func flag_init() {
-  // wordPtr := flag.String("word", "foo", "a string")
-  // numbPtr := flag.Int("numb", 42, "an int")
   flag.BoolVar(&flagdebug, "debug", false, "Enable debug output to stdout")
   flag.BoolVar(&flagsimple, "simple", false, "Print battery level to stdout every check")
   flag.BoolVar(&flagpolybar, "polybar", false, "Print battery level in polybar format")
@@ -138,40 +136,37 @@ func polybar_out(val float64, state battery.State) {
   if ; flagdebug {
     fmt.Printf("Debug polybar: val=%v, state=%v\n", val, state)
   }
-  state_icon_empty := ""
-  state_icon_full := ""
-  state_icon_charging := []string{"\xee\x89\x82",
-                                  "\xee\x89\x83",
-                                  "\xee\x89\x84",
-                                  "\xee\x89\x85",
-                                  "\xee\x89\x86",
-                                  "\xee\x89\x87",
-                                  "\xee\x89\x88",
-                                  "\xee\x89\x89",
-                                  "\xee\x89\x8a",
-                                  "\xee\x89\x8b"}
-  //state_icon_default := ""
+
+  bat_icons := []string{"\xee\x89\x82",
+                        "\xee\x89\x83",
+                        "\xee\x89\x84",
+                        "\xee\x89\x85",
+                        "\xee\x89\x86",
+                        "\xee\x89\x87",
+                        "\xee\x89\x88",
+                        "\xee\x89\x89",
+                        "\xee\x89\x8a",
+                        "\xee\x89\x8b"}
   color_default := "DFDFDF"
   color := get_color(val)
-  // case 0:"Unknown"
-  // case 1:"Empty"
-  // case 2:"Full"
-  // case 3:"Charging"
-  // case 4:"Discharging"
 
   switch ; state {
+    // Empty
     case 1:
-      fmt.Printf("%%{F#%v} %v %%{F#%v}%.2f%%\n", color, state_icon_empty, color_default, val)
+      fmt.Printf("%%{F#%v} %v %%{F#%v}%.2f%%\n", color, bat_icons[0], color_default, val)
+    // Full
     case 2:
-      fmt.Printf("%%{F#%v} %v %%{F#%v}%.2f%%\n", color, state_icon_full, color_default, val)
+      fmt.Printf("%%{F#%v} %v %%{F#%v}%.2f%%\n", color, bat_icons[9], color_default, val)
+    // Unknown, Charging
     case 0,3:
       for i := 0; i < 10; i++ {
-        fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%%\n", color, state_icon_charging[i], color_default, val)
+        fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%%\n", color, bat_icons[i], color_default, val)
         time.Sleep(100 * time.Millisecond)
       }
+    // Discharging
     case 4:
       level := val / 10
-      fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%%\n", color, state_icon_charging[int(level)], color_default, val)
+      fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%%\n", color, bat_icons[int(level)], color_default, val)
       if ; flagdebug {
         fmt.Printf("Polybar discharge pict: %v\n", int(level))
       }
@@ -223,8 +218,10 @@ func get_color(val float64) string {
   case val <= 100.0:
     color = "00FF00"
   }
+
   if ; flagdebug {
     fmt.Printf("Selected color: %v", color)
   }
+
   return color
 }
