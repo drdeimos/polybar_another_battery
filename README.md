@@ -34,8 +34,9 @@ Usage of ./go_battery_notifier:
 ```
 
 ## Polybar
-Built in [polybar](https://github.com/jaagr/polybar) support
-Add flag `-polybar` for get stdout output in polybar format
+
+Built in [polybar](https://github.com/jaagr/polybar) support.
+Add flag `-polybar` for get stdout output in polybar format:
 ![Charging](/screenshots/charging.gif?raw=true "Charging")
 
 ### Polybar module example
