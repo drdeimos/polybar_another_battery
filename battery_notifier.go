@@ -38,10 +38,10 @@ func main() {
 
   for {
     batteries, err := battery.GetAll()
-	  if err != nil {
+    if err != nil {
       fmt.Println("Could not get battery info!")
-	    return
-	  }
+      return
+    }
     for i, battery := range batteries {
       if ; flagdebug {
         fmt.Printf("Bat%d:\n", i)
@@ -84,7 +84,7 @@ func main() {
         os.Exit(0)
       }
       time.Sleep(1 * time.Second)
-	  }
+    }
   }
 }
 
