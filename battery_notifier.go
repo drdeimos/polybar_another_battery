@@ -62,6 +62,9 @@ func main() {
       }
 
       percent := battery.Current / (battery.Full * 0.01)
+      if ; percent > 100.0 {
+        percent = 100.0
+      }
 
       if ; percent < float64(flagthr) && battery.State != 3 {
         body := "Charge percent: " + strconv.FormatFloat(percent, 'f', 2, 32) + "\nState: " + state
