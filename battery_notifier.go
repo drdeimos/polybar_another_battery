@@ -6,7 +6,6 @@ package main
 */
 
 // #cgo pkg-config: libnotify
-// #cgo LDFLAGS: -s
 // #include <stdio.h>
 // #include <errno.h>
 // #include <libnotify/notify.h>
