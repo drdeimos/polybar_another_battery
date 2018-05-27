@@ -38,7 +38,7 @@ func main() {
   }
   notify_init()
 
-  if ; flagdebug {
+  if flagdebug {
     fmt.Printf("Debug: flagthr=%v\n", flagthr)
   }
 
@@ -49,12 +49,12 @@ func main() {
       return
     }
     for i, battery := range batteries {
-      if ; flagdebug {
+      if flagdebug {
         fmt.Printf("Bat%d:\n", i)
         fmt.Printf("  state: %v %f\n", battery.State, battery.State)
       }
 
-      switch ; battery.State {
+      switch battery.State {
       case 1:
         state = "Empty"
       case 2:
@@ -68,28 +68,28 @@ func main() {
       }
 
       percent := battery.Current / (battery.Full * 0.01)
-      if ; percent > 100.0 {
+      if percent > 100.0 {
         percent = 100.0
       }
 
-      if ; percent < float64(flagthr) && battery.State != 3 {
+      if percent < float64(flagthr) && battery.State != 3 {
         body := "Charge percent: " + strconv.FormatFloat(percent, 'f', 2, 32) + "\nState: " + state
         notify_send("Battery low!", body, 1)
       }
 
-      if ; flagdebug {
+      if flagdebug {
         fmt.Printf("  Charge percent: %.2f \n", percent)
         fmt.Printf("  Sleep sec: %v \n", 10)
         fmt.Printf("  Time: %v \n", time.Now())
       }
 
-      if ; flagsimple {
+      if flagsimple {
         fmt.Printf("%.2f\n", percent)
       }
-      if ; flagpolybar {
+      if flagpolybar {
         polybar_out(percent, battery.State)
       }
-      if ; flagonce {
+      if flagonce {
         os.Exit(0)
       }
       time.Sleep(1 * time.Second)
@@ -100,7 +100,7 @@ func main() {
 func notify_init() {
   cs := C.CString("test")
   ret := C.notify_init(cs)
-  if ; ret != 1 {
+  if ret != 1 {
     fmt.Printf("Notification init failed. Returned: %v\n", ret)
   }
 }
@@ -115,7 +115,7 @@ func flag_init() {
 
   flag.Parse()
 
-  if ; flagdebug {
+  if flagdebug {
     fmt.Println("Debug:", flagdebug)
     fmt.Println("tail:", flag.Args())
   }
@@ -126,7 +126,7 @@ func notify_send(summary, body string, urg int) {
   cbody := C.CString(body)
   var curg C.NotifyUrgency
 
-  switch ; urg {
+  switch urg {
   case 1:
     curg = C.NOTIFY_URGENCY_CRITICAL
   case 2:
@@ -137,13 +137,13 @@ func notify_send(summary, body string, urg int) {
   n := C.notify_notification_new(csummary, cbody, nil)
   C.notify_notification_set_urgency(n, curg)
   ret := C.notify_notification_show(n, nil)
-  if ; ret != 1 {
+  if ret != 1 {
     fmt.Printf("Notification show failed. Returned: %v\n", ret)
   }
 }
 
 func polybar_out(val float64, state battery.State) {
-  if ; flagdebug {
+  if flagdebug {
     fmt.Printf("Debug polybar: val=%v, state=%v\n", val, state)
   }
 
@@ -160,7 +160,7 @@ func polybar_out(val float64, state battery.State) {
   color_default := "DFDFDF"
   color := get_color(val)
 
-  switch ; state {
+  switch state {
     // Empty
     case 1:
       fmt.Printf("%%{F#%v} %v %%{F#%v}%.2f%%\n", color, bat_icons[0], color_default, val)
@@ -177,7 +177,7 @@ func polybar_out(val float64, state battery.State) {
     case 4:
       level := val / 10
       fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%%\n", color, bat_icons[int(level)], color_default, val)
-      if ; flagdebug {
+      if flagdebug {
         fmt.Printf("Polybar discharge pict: %v\n", int(level))
       }
     }
@@ -229,7 +229,7 @@ func get_color(val float64) string {
     color = "00FF00"
   }
 
-  if ; flagdebug {
+  if flagdebug {
     fmt.Printf("Selected color: %v", color)
   }
 
