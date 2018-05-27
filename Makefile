@@ -1,6 +1,6 @@
 VERCMD  ?= git describe --long --tags 2> /dev/null
 VERSION ?= $(shell $(VERCMD) || cat VERSION)
-BINNAME ?= "polybar_ab"
+BINNAME ?= "polybar-ab"
 
 PREFIX    ?= /usr/local
 BINPREFIX ?= $(PREFIX)/bin

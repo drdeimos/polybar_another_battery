@@ -19,8 +19,8 @@ make build
 
 Run with key `-h` for get actual help
 ```
-$ ./polybar_ab -h
-Usage of ./polybar_ab:
+$ ./polybar-ab -h
+Usage of ./polybar-ab:
   -debug
       Enable debug output to stdout
   -once
@@ -45,7 +45,7 @@ Add flag `-polybar` for get stdout output in polybar format:
 ```
 [module/custom-battery]
 type = custom/script
-exec = ../polybar_ab -polybar
+exec = ../polybar-ab -polybar
 tail = true
 ```
 
