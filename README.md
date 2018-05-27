@@ -12,7 +12,7 @@ Simple battery charge level watcher with libnotify usage
 
 ```
 go get -u github.com/distatus/battery/cmd/battery
-make
+VERSION=$(git describe --long --tags) make
 ```
 
 # Usage

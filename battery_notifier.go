@@ -24,11 +24,18 @@ var flagsimple bool
 var flagpolybar bool
 var flagonce bool
 var flagthr int
+var flagversion bool
+
+var version string
 
 func main() {
   var state string
 
   flag_init()
+  if flagversion {
+    fmt.Printf("Version: %s\n", version)
+    os.Exit(0)
+  }
   notify_init()
 
   if ; flagdebug {
@@ -104,6 +111,7 @@ func flag_init() {
   flag.BoolVar(&flagpolybar, "polybar", false, "Print battery level in polybar format")
   flag.BoolVar(&flagonce, "once", false, "Check state and print once")
   flag.IntVar(&flagthr, "thr", 10, "Set threshould battery level for notificcations")
+  flag.BoolVar(&flagversion, "version", false, "Print version info and exit")
 
   flag.Parse()
 
