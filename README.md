@@ -19,8 +19,8 @@ VERSION=$(git describe --long --tags) make
 
 Run with key `-h` for get actual help
 ```
-$ ./go_battery_notifier -h
-Usage of ./go_battery_notifier:
+$ ./polybar_ab -h
+Usage of ./polybar_ab:
   -debug
       Enable debug output to stdout
   -once
@@ -31,6 +31,8 @@ Usage of ./go_battery_notifier:
       Print battery level to stdout every check
   -thr int
       Set threshould battery level for notificcations (default 10)
+  -version
+      Print version info and exit
 ```
 
 ## Polybar
@@ -43,7 +45,7 @@ Add flag `-polybar` for get stdout output in polybar format:
 ```
 [module/custom-battery]
 type = custom/script
-exec = ../go_battery_notifier -polybar
+exec = ../polybar_ab -polybar
 tail = true
 ```
 
