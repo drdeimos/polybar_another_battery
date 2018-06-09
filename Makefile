@@ -11,7 +11,7 @@ build:
 	go build -ldflags "-X main.version=$(VERSION)" -o $$(pwd)/$(BINNAME)
 
 install:
-	install -D -m 755 -o root -g root $(BINNAME) $(DESTDIR)$(BINPREFIX)/physlock
+	install -D -m 755 -o root -g root $(BINNAME) $(DESTDIR)$(BINPREFIX)/$(BINNAME)
 
 unistall:
 	rm -rf "$(DESTDIR)$(BINPREFIX)/$(BINNAME)"
