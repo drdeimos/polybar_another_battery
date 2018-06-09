@@ -8,16 +8,17 @@ BINPREFIX ?= $(PREFIX)/bin
 all: build strip install
 
 build:
-	go build -ldflags "-X main.version=${VERSION}" -o ${BINNAME}
+	go build -ldflags "-X main.version=$(VERSION)" -o $$(pwd)/$(BINNAME)
 
 install:
 	mkdir -p "$(DESTDIR)$(BINPREFIX)"
-	cp -pf ${BINNAME} "$(DESTDIR)$(BINPREFIX)"
+	cp -pf $(BINNAME) "$(DESTDIR)$(BINPREFIX)"
+
 unistall:
-	rm -rf "$(DESTDIR)$(BINPREFIX)/${BINNAME}"
+	rm -rf "$(DESTDIR)$(BINPREFIX)/$(BINNAME)"
 
 strip:
-	strip ${BINNAME}
+	strip $(BINNAME)
 
 clean:
-	rm -rf ${BINNAME}
+	rm -rf $(BINNAME)
