@@ -1,14 +1,19 @@
 # About
 
-Simple battery charge level watcher with libnotify usage
+Simple battery charge level watcher with notifications (libnotify)
 
 # Requirements
 
-- (Build) Tested on go1.9.2 (But it should work on earlier versions)
-- (Build) For notifications: libnotify-dev
-- (Usage) As polybar battery indicator - [Siji iconic bitmap font](https://github.com/stark/siji)
+- (Build) go1.9.2 (But it should work on earlier versions)
+- (Build) libnotify-dev
+- (Run) Font for battery indicator - [Siji iconic bitmap font](https://github.com/stark/siji)
+- (Run) libnotify4
 
-# Build
+# Packages
+
+- [PPA for Ubuntu](https://launchpad.net/~drdeimosnn/+archive/ubuntu/survive-on-wm)
+
+# Build manually
 
 ```
 go get -u github.com/distatus/battery/cmd/battery
@@ -45,11 +50,10 @@ Add flag `-polybar` for get stdout output in polybar format:
 ```
 [module/custom-battery]
 type = custom/script
-exec = ../polybar-ab -polybar
+exec = polybar-ab -polybar -thr 10
 tail = true
 ```
 
 # TODO
 - [ ] ETA battery life when discharging
 - [ ] Battery health level (based on full/design capacity)
-- [ ] Improve my English
