@@ -25,6 +25,7 @@ var flagpolybar bool
 var flagonce bool
 var flagthr int
 var flagversion bool
+var batdetected bool
 
 var version string
 
@@ -43,6 +44,7 @@ func main() {
   }
 
   for {
+    waitBat()
     batteries, err := battery.GetAll()
     if err != nil {
       fmt.Println("Could not get battery info!")
@@ -234,4 +236,25 @@ func get_color(val float64) string {
   }
 
   return color
+}
+
+func waitBat() {
+  batdetected = false
+  for batdetected != true {
+    _, err := os.Stat("/sys/class/power_supply/BAT0")
+    if os.IsNotExist(err) {
+      if flagdebug {
+        fmt.Println("Could not find battery!")
+      }
+      if flagpolybar {
+        polybar_out(0, 4)
+      }
+      if flagonce {
+        os.Exit(0)
+      }
+      time.Sleep(1 * time.Second)
+    } else {
+      batdetected = true
+    }
+  }
 }
