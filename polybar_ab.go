@@ -11,21 +11,23 @@ package main
 // #include <libnotify/notify.h>
 import "C"
 import (
-  "os"
-  "fmt"
-  "time"
-  "strconv"
   "flag"
+  "fmt"
+  "os"
+  "strconv"
+  "time"
+
   "github.com/distatus/battery"
 )
 
+var batdetected bool
 var flagdebug bool
-var flagsimple bool
-var flagpolybar bool
+var flagfont int
 var flagonce bool
+var flagpolybar bool
+var flagsimple bool
 var flagthr int
 var flagversion bool
-var batdetected bool
 
 var version string
 
@@ -40,7 +42,13 @@ func main() {
   notify_init()
 
   if flagdebug {
-    fmt.Printf("Debug: flagthr=%v\n", flagthr)
+    fmt.Printf("Debug: flagdebug=%v\n", flagdebug)
+    fmt.Printf("       flagfont=%v\n", flagfont)
+    fmt.Printf("       flagonce=%v\n", flagonce)
+    fmt.Printf("       flagpolybar=%v\n", flagpolybar)
+    fmt.Printf("       flagsimple=%v\n", flagsimple)
+    fmt.Printf("       flagthr=%v\n", flagthr)
+    fmt.Printf("       flagversion=%v\n", flagversion)
   }
 
   for {
@@ -112,7 +120,8 @@ func flag_init() {
   flag.BoolVar(&flagsimple, "simple", false, "Print battery level to stdout every check")
   flag.BoolVar(&flagpolybar, "polybar", false, "Print battery level in polybar format")
   flag.BoolVar(&flagonce, "once", false, "Check state and print once")
-  flag.IntVar(&flagthr, "thr", 10, "Set threshould battery level for notificcations")
+  flag.IntVar(&flagthr, "thr", 10, "Set threshould battery level for notifications")
+  flag.IntVar(&flagfont, "font", 1, "Set font numbler for polybar output")
   flag.BoolVar(&flagversion, "version", false, "Print version info and exit")
 
   flag.Parse()
@@ -149,36 +158,36 @@ func polybar_out(val float64, state battery.State) {
     fmt.Printf("Debug polybar: val=%v, state=%v\n", val, state)
   }
 
-  bat_icons := []string{"\xee\x89\x82",
-                        "\xee\x89\x83",
-                        "\xee\x89\x84",
-                        "\xee\x89\x85",
-                        "\xee\x89\x86",
-                        "\xee\x89\x87",
-                        "\xee\x89\x88",
-                        "\xee\x89\x89",
-                        "\xee\x89\x8a",
-                        "\xee\x89\x8b"}
+  bat_icons := []string{"\xef\x95\xb9",
+                        "\xef\x95\xba",
+                        "\xef\x95\xbb",
+                        "\xef\x95\xbc",
+                        "\xef\x95\xbd",
+                        "\xef\x95\xbe",
+                        "\xef\x95\xbf",
+                        "\xef\x96\x80",
+                        "\xef\x96\x81",
+                        "\xef\x95\xb8"}
   color_default := "DFDFDF"
   color := get_color(val)
 
   switch state {
     // Empty
     case 1:
-      fmt.Printf("%%{F#%v} %v %%{F#%v}%.2f%%\n", color, bat_icons[0], color_default, val)
+      fmt.Printf("%%{T%d}%%{F#%v} %v %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[0], color_default, val)
     // Full
     case 2:
-      fmt.Printf("%%{F#%v} %v %%{F#%v}%.2f%%\n", color, bat_icons[9], color_default, val)
+      fmt.Printf("%%{T%d}%%{F#%v} %v %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[9], color_default, val)
     // Unknown, Charging
     case 0,3:
       for i := 0; i < 10; i++ {
-        fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%%\n", color, bat_icons[i], color_default, val)
+        fmt.Printf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[i], color_default, val)
         time.Sleep(100 * time.Millisecond)
       }
     // Discharging
     case 4:
       level := val / 10
-      fmt.Printf("%%{F#%v} %s %%{F#%v}%.2f%%\n", color, bat_icons[int(level)], color_default, val)
+      fmt.Printf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[int(level)], color_default, val)
       if flagdebug {
         fmt.Printf("Polybar discharge pict: %v\n", int(level))
       }
