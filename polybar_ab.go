@@ -119,7 +119,7 @@ func flag_init() {
   flag.BoolVar(&flagsimple, "simple", false, "Print battery level to stdout every check")
   flag.BoolVar(&flagpolybar, "polybar", false, "Print battery level in polybar format")
   flag.BoolVar(&flagonce, "once", false, "Check state and print once")
-  flag.IntVar(&flagthr, "thr", 10, "Set threshould battery level for notificcations")
+  flag.IntVar(&flagthr, "thr", 10, "Set threshould battery level for notifications")
   flag.BoolVar(&flagversion, "version", false, "Print version info and exit")
 
   flag.Parse()
