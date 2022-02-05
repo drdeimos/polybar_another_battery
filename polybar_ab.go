@@ -158,16 +158,16 @@ func polybar_out(val float64, state battery.State) {
     fmt.Printf("Debug polybar: val=%v, state=%v\n", val, state)
   }
 
-  bat_icons := []string{"\xee\x89\x82",
-                        "\xee\x89\x83",
-                        "\xee\x89\x84",
-                        "\xee\x89\x85",
-                        "\xee\x89\x86",
-                        "\xee\x89\x87",
-                        "\xee\x89\x88",
-                        "\xee\x89\x89",
-                        "\xee\x89\x8a",
-                        "\xee\x89\x8b"}
+  bat_icons := []string{"\xef\x95\xb9",
+                        "\xef\x95\xba",
+                        "\xef\x95\xbb",
+                        "\xef\x95\xbc",
+                        "\xef\x95\xbd",
+                        "\xef\x95\xbe",
+                        "\xef\x95\xbf",
+                        "\xef\x96\x80",
+                        "\xef\x96\x81",
+                        "\xef\x95\xb8"}
   color_default := "DFDFDF"
   color := get_color(val)
 
