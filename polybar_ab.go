@@ -11,11 +11,12 @@ package main
 // #include <libnotify/notify.h>
 import "C"
 import (
-  "os"
-  "fmt"
-  "time"
-  "strconv"
   "flag"
+  "fmt"
+  "os"
+  "strconv"
+  "time"
+
   "github.com/distatus/battery"
 )
 
