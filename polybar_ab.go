@@ -41,7 +41,13 @@ func main() {
   notify_init()
 
   if flagdebug {
-    fmt.Printf("Debug: flagthr=%v\n", flagthr)
+    fmt.Printf("Debug: flagdebug=%v\n", flagdebug)
+    fmt.Printf("       flagfont=%v\n", flagfont)
+    fmt.Printf("       flagonce=%v\n", flagonce)
+    fmt.Printf("       flagpolybar=%v\n", flagpolybar)
+    fmt.Printf("       flagsimple=%v\n", flagsimple)
+    fmt.Printf("       flagthr=%v\n", flagthr)
+    fmt.Printf("       flagversion=%v\n", flagversion)
   }
 
   for {
