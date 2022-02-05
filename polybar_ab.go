@@ -20,13 +20,13 @@ import (
   "github.com/distatus/battery"
 )
 
+var batdetected bool
 var flagdebug bool
-var flagsimple bool
-var flagpolybar bool
 var flagonce bool
+var flagpolybar bool
+var flagsimple bool
 var flagthr int
 var flagversion bool
-var batdetected bool
 
 var version string
 
