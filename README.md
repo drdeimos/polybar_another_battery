@@ -6,7 +6,7 @@ Simple battery charge level watcher with notifications (libnotify)
 
 - (Build) go1.9.2 (But it should work on earlier versions)
 - (Build) libnotify-dev
-- (Run) Font for battery indicator - [Siji iconic bitmap font](https://github.com/stark/siji)
+- (Run) Font for battery indicator - 3270Medium NF
 - (Run) libnotify4
 
 # Packages

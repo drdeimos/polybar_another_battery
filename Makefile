@@ -13,7 +13,7 @@ build:
 install:
 	install -D -m 755 -o root -g root $(BINNAME) $(DESTDIR)$(BINPREFIX)/$(BINNAME)
 
-unistall:
+uninstall:
 	rm -rf "$(DESTDIR)$(BINPREFIX)/$(BINNAME)"
 
 strip:
