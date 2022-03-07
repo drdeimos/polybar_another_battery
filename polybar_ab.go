@@ -55,17 +55,22 @@ func main() {
 		waitBat()
 		batteries, err := battery.GetAll()
 		if err != nil {
-			// fmt.Println("Could not get battery info!")
-			fmt.Printf("%+v\n", err)
-			return
+			if flagdebug {
+				fmt.Println("Could not get battery info!")
+				fmt.Printf("%+v\n", err)
+				//return
+			}
 		}
 		for i, battery := range batteries {
 			if flagdebug {
+				fmt.Printf("%s:\n", battery)
 				fmt.Printf("Bat%d:\n", i)
 				fmt.Printf("  state: %v %f\n", battery.State, battery.State)
 			}
 
 			switch battery.State {
+			case 0:
+				state = "Not charging"
 			case 1:
 				state = "Empty"
 			case 2:
@@ -174,6 +179,13 @@ func polybar_out(val float64, state battery.State) {
 	color := get_color(val)
 
 	switch state {
+	// Not charging
+	case 0:
+		level := val / 10
+		fmt.Printf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%%\n", flagfont, "00DDFF", bat_icons[int(level)], color_default, val)
+		if flagdebug {
+			fmt.Printf("Polybar discharge pict: %v\n", int(level))
+		}
 	// Empty
 	case 1:
 		fmt.Printf("%%{T%d}%%{F#%v} %v %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[0], color_default, val)
@@ -181,7 +193,7 @@ func polybar_out(val float64, state battery.State) {
 	case 2:
 		fmt.Printf("%%{T%d}%%{F#%v} %v %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[9], color_default, val)
 	// Unknown, Charging
-	case 0, 3:
+	case 3:
 		for i := 0; i < 10; i++ {
 			fmt.Printf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[i], color_default, val)
 			time.Sleep(100 * time.Millisecond)
