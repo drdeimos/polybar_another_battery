@@ -176,7 +176,9 @@ func polybar_out(val float64, state battery.State) {
 		"\xef\x95\xbf",
 		"\xef\x96\x80",
 		"\xef\x96\x81",
-		"\xef\x95\xb8"}
+		"\xef\x95\xb8",
+		"\xef\x95\xb8", //When charge percent euqall 100 or more
+	}
 	color_default := "DFDFDF"
 	color := get_color(val)
 
