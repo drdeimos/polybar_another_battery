@@ -86,6 +86,8 @@ func main() {
 			percent := battery.Current / (battery.Full * 0.01)
 			if percent > 100.0 {
 				percent = 100.0
+			} else if battery.Full == 0 { // Workaround. Sometime sysfs don't know full charge level. Dunno why
+				percent = 100
 			}
 
 			if percent < float64(flagthr) && battery.State != 3 {
