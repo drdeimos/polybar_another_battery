@@ -14,7 +14,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/distatus/battery"
@@ -91,8 +90,7 @@ func main() {
 			}
 
 			if percent < float64(flagthr) && battery.State != 3 {
-				body := "Charge percent: " + strconv.FormatFloat(percent, 'f', 2, 32) + "\nState: " + state
-				notify_send("Battery low!", body, 1)
+				notify_send("Battery low!", fmt.Sprintf("Charge percent: %.2f\nState: %s", percent, state), 1)
 			}
 
 			if flagdebug {
