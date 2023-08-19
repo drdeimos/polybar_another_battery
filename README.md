@@ -55,5 +55,5 @@ tail = true
 ```
 
 # TODO
-- [ ] ETA battery life when discharging
+- [x] ETA battery life when discharging
 - [ ] Battery health level (based on full/design capacity)
