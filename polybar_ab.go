@@ -89,7 +89,7 @@ func main() {
 				fmt.Printf("  state: %v %v\n", battery.State, battery.State)
 			}
 
-			switch battery.State {
+			switch battery.State.Raw {
 			case 0:
 				state = "Not charging"
 			case 1:
@@ -111,7 +111,7 @@ func main() {
 				percent = 100
 			}
 
-			if percent < float64(flagthr) && battery.State != 3 {
+			if percent < float64(flagthr) && battery.State.Raw != 3 {
 				notify_send("Battery low!", fmt.Sprintf("Charge percent: %.2f\nState: %s", percent, state), 1)
 			}
 
@@ -125,7 +125,7 @@ func main() {
 				fmt.Printf("%.2f\n", percent)
 			}
 			if flagpolybar {
-				polybar_out(percent, battery.State, conn)
+				polybar_out(percent, battery.State.Raw, conn)
 			}
 			if flagonce {
 				os.Exit(0)
@@ -182,7 +182,7 @@ func notify_send(summary, body string, urg int) {
 	}
 }
 
-func polybar_out(val float64, state battery.State, conn *dbus.Conn) {
+func polybar_out(val float64, state battery.AgnosticState, conn *dbus.Conn) {
 	if flagdebug {
 		fmt.Printf("Debug polybar: val=%v, state=%v\n", val, state)
 	}
@@ -310,7 +310,7 @@ func waitBat() {
 				fmt.Println("Could not find battery!")
 			}
 			if flagpolybar {
-				polybar_out(0, 4, conn)
+				polybar_out(0, battery.Discharging, conn)
 			}
 			if flagonce {
 				os.Exit(0)
