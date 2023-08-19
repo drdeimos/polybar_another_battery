@@ -86,7 +86,7 @@ func main() {
 			if flagdebug {
 				fmt.Printf("%s:\n", battery)
 				fmt.Printf("Bat%d:\n", i)
-				fmt.Printf("  state: %v %f\n", battery.State, battery.State)
+				fmt.Printf("  state: %v %v\n", battery.State, battery.State)
 			}
 
 			switch battery.State {
@@ -332,7 +332,7 @@ func getBatteryTimeAttribute(conn *dbus.Conn, prop string) (string, error) {
 	case "TimeToEmpty":
 		dbusProp = "TimeToEmpty"
 	default:
-		return "", fmt.Errorf("Unsupported property: %s", prop)
+		return "", fmt.Errorf("unsupported property: %s", prop)
 	}
 
 	variant, err := busObject.GetProperty("org.freedesktop.UPower.Device." + dbusProp)
@@ -351,7 +351,7 @@ func getBatteryTimeAttribute(conn *dbus.Conn, prop string) (string, error) {
 		return result, nil
 	}
 
-	return "", fmt.Errorf("Property %s not available", dbusProp)
+	return "", fmt.Errorf("property %s not available", dbusProp)
 }
 
 func formatSeconds(seconds int64) string {
