@@ -14,9 +14,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/distatus/battery"
+	"github.com/godbus/dbus/v5"
 )
 
 var batdetected bool
@@ -27,18 +29,38 @@ var flagpolybar bool
 var flagsimple bool
 var flagthr int
 var flagversion bool
+var flagtimeto bool
 
 var version string
 
-func main() {
-	var state string
+var conn *dbus.Conn
 
+func main() {
+	// Init flags. Must be first before use it
 	flag_init()
 	if flagversion {
 		fmt.Printf("Version: %s\n", version)
 		os.Exit(0)
 	}
+
+	// Init notifications
 	notify_init()
+
+	// DBus init
+	var err error
+	conn, err = dbus.SystemBus()
+	if err != nil {
+		fmt.Println("Error initializing dbus connection:", err)
+		os.Exit(1)
+	}
+	defer conn.Close()
+
+	if flagdebug {
+		fmt.Println("DBus connection established successfully.")
+	}
+	// End
+
+	var state string
 
 	if flagdebug {
 		fmt.Printf("Debug: flagdebug=%v\n", flagdebug)
@@ -103,7 +125,7 @@ func main() {
 				fmt.Printf("%.2f\n", percent)
 			}
 			if flagpolybar {
-				polybar_out(percent, battery.State)
+				polybar_out(percent, battery.State, conn)
 			}
 			if flagonce {
 				os.Exit(0)
@@ -129,6 +151,7 @@ func flag_init() {
 	flag.IntVar(&flagthr, "thr", 10, "Set threshould battery level for notifications")
 	flag.IntVar(&flagfont, "font", 1, "Set font numbler for polybar output")
 	flag.BoolVar(&flagversion, "version", false, "Print version info and exit")
+	flag.BoolVar(&flagtimeto, "time-to", false, "Print \"time to full\" or \"time to empty\"")
 
 	flag.Parse()
 
@@ -159,7 +182,7 @@ func notify_send(summary, body string, urg int) {
 	}
 }
 
-func polybar_out(val float64, state battery.State) {
+func polybar_out(val float64, state battery.State, conn *dbus.Conn) {
 	if flagdebug {
 		fmt.Printf("Debug polybar: val=%v, state=%v\n", val, state)
 	}
@@ -196,17 +219,32 @@ func polybar_out(val float64, state battery.State) {
 		fmt.Printf("%%{T%d}%%{F#%v} %v %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[9], color_default, val)
 	// Unknown, Charging
 	case 3:
+		timeToFull, err := getBatteryTimeAttribute(conn, "TimeToFull")
+		if err != nil {
+			fmt.Printf(" Error getting battery time attribute: %v\n", err)
+		}
+
 		for i := 0; i < 10; i++ {
-			fmt.Printf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[i], color_default, val)
+			// Дописать время до полной зарядки к каждой строке вывода
+			fmt.Printf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%% %s\n", flagfont, color, bat_icons[i], color_default, val, timeToFull)
 			time.Sleep(100 * time.Millisecond)
 		}
 	// Discharging
 	case 4:
 		level := val / 10
-		fmt.Printf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%%\n", flagfont, color, bat_icons[int(level)], color_default, val)
+		output := fmt.Sprintf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%%", flagfont, color, bat_icons[int(level)], color_default, val)
 		if flagdebug {
-			fmt.Printf("Polybar discharge pict: %v\n", int(level))
+			output += fmt.Sprintf("\nPolybar discharge pict: %v", int(level))
 		}
+		if flagtimeto {
+			timeToInfo, err := getBatteryTimeAttribute(conn, "TimeToEmpty")
+			if err != nil {
+				output += fmt.Sprintf(" Error getting battery time attribute: %v", err)
+			} else {
+				output += fmt.Sprintf(" %s", timeToInfo)
+			}
+		}
+		fmt.Println(output)
 	}
 }
 
@@ -265,14 +303,14 @@ func get_color(val float64) string {
 
 func waitBat() {
 	batdetected = false
-	for batdetected != true {
+	for !batdetected {
 		_, err := os.Stat("/sys/class/power_supply/BAT0")
 		if os.IsNotExist(err) {
 			if flagdebug {
 				fmt.Println("Could not find battery!")
 			}
 			if flagpolybar {
-				polybar_out(0, 4)
+				polybar_out(0, 4, conn)
 			}
 			if flagonce {
 				os.Exit(0)
@@ -282,4 +320,51 @@ func waitBat() {
 			batdetected = true
 		}
 	}
+}
+
+func getBatteryTimeAttribute(conn *dbus.Conn, prop string) (string, error) {
+	busObject := conn.Object("org.freedesktop.UPower", "/org/freedesktop/UPower/devices/battery_BAT0")
+
+	var dbusProp string
+	switch prop {
+	case "TimeToFull":
+		dbusProp = "TimeToFull"
+	case "TimeToEmpty":
+		dbusProp = "TimeToEmpty"
+	default:
+		return "", fmt.Errorf("Unsupported property: %s", prop)
+	}
+
+	variant, err := busObject.GetProperty("org.freedesktop.UPower.Device." + dbusProp)
+	if err != nil {
+		return "", err
+	}
+
+	value := variant.Value()
+
+	if value != nil {
+		seconds := value.(int64)
+		formattedTime := formatSeconds(seconds)
+		result := fmt.Sprintf("%s: %v", dbusProp, formattedTime)
+		result = strings.Replace(result, "TimeToFull", "TTF", -1)
+		result = strings.Replace(result, "TimeToEmpty", "TTE", -1)
+		return result, nil
+	}
+
+	return "", fmt.Errorf("Property %s not available", dbusProp)
+}
+
+func formatSeconds(seconds int64) string {
+	hours := seconds / 3600
+	seconds %= 3600
+	minutes := seconds / 60
+
+	var result string
+	if hours > 0 {
+		result += fmt.Sprintf("%dh", hours)
+	}
+	if minutes > 0 {
+		result += fmt.Sprintf("%dm", minutes)
+	}
+	return result
 }
