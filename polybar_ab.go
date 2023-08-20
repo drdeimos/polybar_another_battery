@@ -225,7 +225,7 @@ func polybar_out(val float64, state battery.AgnosticState, conn *dbus.Conn) {
 		}
 
 		for i := 0; i < 10; i++ {
-			// Дописать время до полной зарядки к каждой строке вывода
+			// Add the time to full charge to each line of output
 			fmt.Printf("%%{T%d}%%{F#%v} %s %%{F#%v}%%{T-}%.2f%% %s\n", flagfont, color, bat_icons[i], color_default, val, timeToFull)
 			time.Sleep(100 * time.Millisecond)
 		}
