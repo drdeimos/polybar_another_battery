@@ -4,10 +4,11 @@ Simple battery charge level watcher with notifications (libnotify)
 
 # Requirements
 
-- (Build) go1.9.2 (But it should work on earlier versions)
-- (Build) libnotify-dev
+- (Build) go1.17
+- (Build) libnotify-dev, pkg-config
 - (Run) Font for battery indicator - 3270Medium NF
-- (Run) libnotify4
+- (Run) libnotify
+- (Run) UPower (`-time-to` flag)
 
 # Packages
 
@@ -27,17 +28,22 @@ Run with key `-h` for get actual help
 $ ./polybar-ab -h
 Usage of ./polybar-ab:
   -debug
-      Enable debug output to stdout
+    	Enable debug output to stdout
+  -font int
+    	Set font numbler for polybar output (default 1)
   -once
-      Check state and print once
+    	Check state and print once
   -polybar
-      Print battery level in polybar format
+    	Print battery level in polybar format
   -simple
-      Print battery level to stdout every check
+    	Print battery level to stdout every check
   -thr int
-      Set threshould battery level for notificcations (default 10)
+    	Set threshould battery level for notifications (default 10)
+  -time-to
+    	Print "time to full" or "time to empty"
   -version
-      Print version info and exit
+    	Print version info and exit
+
 ```
 
 ## Polybar
@@ -50,7 +56,7 @@ Add flag `-polybar` for get stdout output in polybar format:
 ```
 [module/custom-battery]
 type = custom/script
-exec = polybar-ab -polybar -thr 10
+exec = polybar-ab -polybar -thr 10 -font 6 -time-to
 tail = true
 ```
 
